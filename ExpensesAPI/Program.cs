@@ -1,4 +1,5 @@
 using ExpensesAPI.Data;
+using ExpensesAPI.Data.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 var con = builder.Configuration.GetConnectionString("Default");
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(con));
+
+builder.Services.AddScoped<ITransactionsService, TransactionsService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

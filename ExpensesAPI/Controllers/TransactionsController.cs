@@ -1,4 +1,5 @@
 ﻿using ExpensesAPI.Data;
+using ExpensesAPI.Data.Services;
 using ExpensesAPI.DTOs;
 using ExpensesAPI.Models;
 using Microsoft.AspNetCore.Http;
@@ -8,12 +9,12 @@ namespace ExpensesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionsController(AppDbContext context) : ControllerBase
+    public class TransactionsController(ITransactionsService transService) : ControllerBase
     {
         [HttpGet("All")]
         public ActionResult GetAll()
         {
-            var allTrans = context.Transactions.ToList();
+            var allTrans = transService.GetAll();
 
             return Ok(allTrans);
         }
@@ -21,7 +22,8 @@ namespace ExpensesAPI.Controllers
         [HttpGet("Details/{id}")]
         public IActionResult Get(int id)
         {
-            var transDB = context.Transactions.FirstOrDefault(x => x.Id == id);
+            var transDB = transService.GetById(id);
+
             if (transDB == null)
                 return NotFound();
 
@@ -31,49 +33,26 @@ namespace ExpensesAPI.Controllers
         [HttpPost("Create")]
         public IActionResult CreateTransaction([FromBody] PostTransactionDTO payload)
         {
-            var newTrans = new Transaction()
-            {
-                Amount = payload.Amount,
-                Type = payload.Type,
-                Category = payload.Category,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-            };
+            var newTrans = transService.Add(payload);
 
-            context.Transactions.Add(newTrans);
-            context.SaveChanges();
-            return Ok();
+            return Ok(newTrans);
         }
 
         [HttpPut("Update/{id}")]
         public IActionResult UpdateTransaction(int id, [FromBody] PutTransactionDTO payload)
         {
-            var transDb = context.Transactions.FirstOrDefault(x => x.Id == id);
+            var updatedTrans = transService.Update(id, payload);
 
-            if (transDb == null)
+            if (updatedTrans == null)
                 return NotFound();
 
-            transDb.Amount = payload.Amount;
-            transDb.Type = payload.Type;
-            transDb.Category = payload.Category;
-            transDb.UpdatedAt = DateTime.UtcNow;
-
-            context.Transactions.Update(transDb);
-            context.SaveChanges();
-
-            return Ok(transDb);
+            return Ok(updatedTrans);
         }
 
         [HttpDelete("Delete/{id}")]
         public IActionResult DeleteTransaction(int id)
         {
-            var transDb = context.Transactions.FirstOrDefault(x => x.Id == id);
-
-            if (transDb == null)
-                return NotFound();
-
-            context.Transactions.Remove(transDb);
-            context.SaveChanges();
+            transService.Delete(id);
 
             return Ok();
         }
