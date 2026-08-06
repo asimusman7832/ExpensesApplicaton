@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
-import { Login } from './login/login';
-import { TransactionList } from './transaction-list/transaction-list';
-import { Signup } from './signup/signup';
-import { TransactionForm } from './transaction-form/transaction-form';
+import { Login } from './components/login/login';
+import { TransactionList } from './components/transaction-list/transaction-list';
+import { Signup } from './components/signup/signup';
+import { TransactionForm } from './components/transaction-form/transaction-form';
 
 export const routes: Routes = [
   {
