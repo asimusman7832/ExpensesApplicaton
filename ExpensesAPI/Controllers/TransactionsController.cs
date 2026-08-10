@@ -2,6 +2,7 @@
 using ExpensesAPI.Data.Services;
 using ExpensesAPI.DTOs;
 using ExpensesAPI.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace ExpensesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowAll")]
     public class TransactionsController(ITransactionsService transService) : ControllerBase
     {
         [HttpGet("All")]
