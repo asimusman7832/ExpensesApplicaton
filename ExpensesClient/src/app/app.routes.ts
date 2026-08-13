@@ -15,23 +15,23 @@ export const routes: Routes = [
   },
   {
     path: 'transactions',
-    component: TransactionList
+    component: TransactionList,
   },
   {
     path: 'add',
-    component: TransactionForm
+    component: TransactionForm,
   },
   {
     path: 'edit/:id',
-    component: TransactionForm
+    component: TransactionForm,
   },
   {
-    path:'**',
-    redirectTo: '/transactions'
-  },
-  {
-    path:'',
+    path: '**',
     redirectTo: '/transactions',
-    pathMatch: 'full'
-  }
+  },
+  {
+    path: '',
+    redirectTo: '/transactions',
+    pathMatch: 'full',
+  },
 ];

@@ -43,20 +43,29 @@
                 </tr>
             </thead>
             <tbody>
-          @for (trans of transactions; track trans.id) {
-            <tr>
-              <td>{{ trans?.createdAt | date }}</td>
-              <td [ngClass]="{ 'text-danger': trans?.type === 'Expense', 'text-success': trans?.type === 'Income' }">
-                {{ trans?.type }}
-              </td>
-              <td>{{ trans?.category }}</td>
-              <td [ngClass]="{ 'text-danger': trans?.type === 'Expense', 'text-success': trans?.type === 'Income' }">
-                {{ trans?.amount | currency}}
-              </td>
-              <td>options</td>
-            </tr>
-          }
-        </tbody>
+                @for (trans of transactions; track trans.id) {
+                <tr>
+                    <td>{{ trans?.createdAt | date }}</td>
+                    <td
+                        [ngClass]="{ 'text-danger': trans?.type === 'Expense', 'text-success': trans?.type === 'Income' }">
+                        {{ trans?.type }}
+                    </td>
+                    <td>{{ trans?.category }}</td>
+                    <td
+                        [ngClass]="{ 'text-danger': trans?.type === 'Expense', 'text-success': trans?.type === 'Income' }">
+                        {{ trans?.amount | currency}}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" (click)="editTransaction(trans)">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="deleteTransaction(trans)">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            </tbody>
         </table>
     </div>
     }
