@@ -1,6 +1,11 @@
 using ExpensesAPI.Data;
 using ExpensesAPI.Data.Services;
+using ExpensesAPI.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +15,25 @@ builder.Services.AddCors(opt => opt.AddPolicy("AllowAll",
     .AllowAnyMethod()
     .AllowAnyOrigin())
     );
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = "dotnethow.net",
+            ValidAudience = "dotnethow.net",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-very-secure-secret-key-32-chars-long"))
+        };
+    });
+
+builder.Services.AddScoped<PasswordHasher<User>>();
+
 var con = builder.Configuration.GetConnectionString("Default");
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseSqlServer(con));
@@ -34,6 +58,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
