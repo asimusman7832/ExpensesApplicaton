@@ -5,15 +5,15 @@ namespace ExpensesAPI.Data.Services
 {
     public interface ITransactionsService
     {
-        List<Transaction> GetAll();
+        List<Transaction> GetAll(int userId);
         Transaction? GetById(int id);
-        Transaction Add(PostTransactionDTO transaction);
+        Transaction Add(PostTransactionDTO transaction, int userId);
         Transaction? Update(int id, PutTransactionDTO transaction);
         void Delete(int id);
     }
     public class TransactionsService(AppDbContext context) : ITransactionsService
     {
-        public Transaction Add(PostTransactionDTO transaction)
+        public Transaction Add(PostTransactionDTO transaction, int userId)
         {
             var newTrans = new Transaction()
             {
@@ -22,6 +22,7 @@ namespace ExpensesAPI.Data.Services
                 Category = transaction.Category,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
+                UserId = userId
             };
 
             context.Transactions.Add(newTrans);
@@ -42,9 +43,9 @@ namespace ExpensesAPI.Data.Services
             }
         }
 
-        public List<Transaction> GetAll()
+        public List<Transaction> GetAll(int userId)
         {
-            var allTrans = context.Transactions.ToList();
+            var allTrans = context.Transactions.Where(x => x.UserId == userId).ToList();
 
             return allTrans;
         }

@@ -2,21 +2,32 @@
 using ExpensesAPI.Data.Services;
 using ExpensesAPI.DTOs;
 using ExpensesAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace ExpensesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [EnableCors("AllowAll")]
+    [Authorize]
     public class TransactionsController(ITransactionsService transService) : ControllerBase
     {
         [HttpGet("All")]
         public ActionResult GetAll()
         {
-            var allTrans = transService.GetAll();
+            var nameIdentifierClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(nameIdentifierClaim))
+                return BadRequest("User ID is missing");
+
+            if (!int.TryParse(nameIdentifierClaim, out int userId))
+                return BadRequest("Invalid User ID");
+
+            var allTrans = transService.GetAll(userId);
 
             return Ok(allTrans);
         }
@@ -35,7 +46,15 @@ namespace ExpensesAPI.Controllers
         [HttpPost("Create")]
         public IActionResult CreateTransaction([FromBody] PostTransactionDTO payload)
         {
-            var newTrans = transService.Add(payload);
+            var nameIdentifierClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrEmpty(nameIdentifierClaim))
+                return BadRequest("User ID is missing");
+
+            if(!int.TryParse(nameIdentifierClaim, out int userId))
+                return BadRequest("Invalid User ID");
+
+            var newTrans = transService.Add(payload, userId);
 
             return Ok(newTrans);
         }
